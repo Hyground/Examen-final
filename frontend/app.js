@@ -1,4 +1,4 @@
-// Copia y pega este contenido en frontend/app.js
+// Contenido completo para frontend/app.js
 
 const API_BASE_URL = 'http://localhost:8080/api/inventario';
 
@@ -42,7 +42,7 @@ document.getElementById('formProducto').addEventListener('submit', async (e) => 
     const data = {
         nombre: nombre,
         ubicacionBodega: ubicacionBodega,
-        stock: 0, // Se inicializa en 0
+        stock: 0,
         proveedor: { id: parseInt(proveedorId) }
     };
 
@@ -58,19 +58,51 @@ document.getElementById('formProducto').addEventListener('submit', async (e) => 
         const producto = await response.json();
         mostrarMensaje('msgProducto', `Producto '${producto.nombre}' (ID: ${producto.id}) creado.`, true);
         document.getElementById('formProducto').reset();
+        cargarInventario(); // Recargar la lista tras crear
     } catch (error) {
         mostrarMensaje('msgProducto', 'Error: El ID de Proveedor no existe o faltan datos.', false);
     }
 });
 
 
-// --- 3. Cargar Inventario ---
+// --- 3. Registrar Movimiento (ENTRADA / SALIDA) ---
+document.getElementById('formMovimiento').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const productoId = document.getElementById('movimientoProductoId').value;
+    const tipo = document.getElementById('movimientoTipo').value;
+    const cantidad = document.getElementById('movimientoCantidad').value;
+    
+    const url = `${API_BASE_URL}/movimiento/${productoId}?tipo=${tipo}&cantidad=${cantidad}`;
+
+    try {
+        const response = await fetch(url, { method: 'POST' });
+
+        if (!response.ok) {
+             const errorText = await response.text();
+             throw new Error(errorText || 'Error desconocido al registrar movimiento.');
+        }
+
+        const productoActualizado = await response.json();
+        mostrarMensaje('msgMovimiento', 
+            `${tipo.toUpperCase()} exitosa. Stock de ${productoActualizado.nombre} ahora es ${productoActualizado.stock}.`, true);
+        
+        document.getElementById('formMovimiento').reset();
+        cargarInventario(); // Recargar la lista tras movimiento
+
+    } catch (error) {
+        mostrarMensaje('msgMovimiento', `Error: ${error.message}`, false);
+    }
+});
+
+
+// --- 4. Cargar Inventario ---
 async function cargarInventario() {
     const lista = document.getElementById('listaProductos');
     lista.innerHTML = '<li>Cargando...</li>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/productos`);
+        // En este punto, sabemos que el problema de serialización ha sido corregido en el backend.
+        const response = await fetch(`${API_BASE_URL}/productos`); 
         if (!response.ok) throw new Error('Error al obtener inventario.');
 
         const productos = await response.json();
@@ -83,6 +115,7 @@ async function cargarInventario() {
 
         productos.forEach(p => {
             const li = document.createElement('li');
+            // Usamos || 0 por si el campo stock viene nulo por algún error de inserción inicial.
             li.textContent = `[ID: ${p.id}] ${p.nombre} - Stock: ${p.stock || 0} - Bodega: ${p.ubicacionBodega} (Prov: ${p.proveedor.id})`;
             lista.appendChild(li);
         });
