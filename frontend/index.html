@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Backend - Examen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Inventario (Frontend Básico)</h1>
+    </header>
+    <main>
+        <section id="form-proveedores">
+            <h2>Crear Nuevo Proveedor</h2>
+            <form id="formProveedor">
+                <label for="nombreProveedor">Nombre del Proveedor:</label>
+                <input type="text" id="nombreProveedor" required>
+                <button type="submit">Guardar Proveedor</button>
+                <p id="msgProveedor" class="message"></p>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="form-productos">
+            <h2>Crear Nuevo Producto</h2>
+            <form id="formProducto">
+                <label for="nombreProducto">Nombre:</label>
+                <input type="text" id="nombreProducto" required>
+
+                <label for="ubicacionProducto">Ubicación Bodega:</label>
+                <input type="text" id="ubicacionProducto" required>
+
+                <label for="proveedorIdProducto">ID del Proveedor:</label>
+                <input type="number" id="proveedorIdProducto" required>
+
+                <button type="submit">Guardar Producto</button>
+                <p id="msgProducto" class="message"></p>
+            </form>
+        </section>
+
+        <hr>
+        
+        <section id="lista-inventario">
+            <h2>Inventario Actual</h2>
+            <button onclick="cargarInventario()">Actualizar Inventario</button>
+            <ul id="listaProductos">
+                <li>Presiona "Actualizar Inventario" para cargar datos del backend.</li>
+            </ul>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>

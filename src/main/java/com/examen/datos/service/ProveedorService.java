@@ -1,0 +1,38 @@
+package com.examen.datos.service;
+
+import com.examen.datos.model.Proveedor;
+import com.examen.datos.repository.ProveedorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProveedorService {
+
+    @Autowired
+    private ProveedorRepository proveedorRepository;
+
+    public List<Proveedor> getAllProveedores() {
+        return proveedorRepository.findAll();
+    }
+
+    public Optional<Proveedor> getProveedorById(Long id) {
+        return proveedorRepository.findById(id);
+    }
+
+    public Proveedor createProveedor(Proveedor proveedor) {
+        return proveedorRepository.save(proveedor);
+    }
+
+    public Proveedor updateProveedor(Long id, Proveedor proveedorDetails) {
+        Proveedor proveedor = proveedorRepository.findById(id).orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
+        proveedor.setNombre(proveedorDetails.getNombre());
+        return proveedorRepository.save(proveedor);
+    }
+
+    public void deleteProveedor(Long id) {
+        proveedorRepository.deleteById(id);
+    }
+}
